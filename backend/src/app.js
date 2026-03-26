@@ -27,8 +27,8 @@ import dotenv from "dotenv";
 import pool from "./config/db.js";
 
 // Import your routes - Ensure these filenames exactly match your files in /routes
-import chatRoutes from "./routes/chatRoutes.js";
-import graphRoutes from "./routes/graphRoutes.js";
+import chatRoutes from "./routes/chat.js";
+import graphRoutes from "./routes/graph.js";
 
 dotenv.config();
 
