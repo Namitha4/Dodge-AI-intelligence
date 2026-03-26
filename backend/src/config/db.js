@@ -28,6 +28,7 @@ dotenv.config();
 
 const { Pool } = pg;
 
+// On Render, DATABASE_URL is automatically provided by your Postgres instance
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   // This SSL setting is mandatory for Render's Free Tier Postgres
