@@ -1,4 +1,4 @@
-const API = 'http://localhost:5000';
+const API_URL = "https://dodge-ai-intelligence.onrender.com";
 let cy;
 
 const typeColor = {
