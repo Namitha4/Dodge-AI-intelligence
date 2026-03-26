@@ -21,13 +21,12 @@ app.listen(process.env.PORT || 5000, () => {
 
 */
 
-
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import pool from "./db.js"; // Import the pool you just fixed
+import pool from "./db.js";
 
-// Import your routes
+// Import your routes - Ensure these filenames exactly match your files in /routes
 import chatRoutes from "./routes/chatRoutes.js";
 import graphRoutes from "./routes/graphRoutes.js";
 
@@ -36,7 +35,7 @@ dotenv.config();
 const app = express();
 
 // 1. CORS Configuration
-// Replace the origin with your actual Vercel URL once deployed
+// This allows your Vercel frontend to talk to this Render backend
 app.use(cors({
   origin: process.env.FRONTEND_URL || "http://localhost:3000", 
   credentials: true
@@ -45,6 +44,7 @@ app.use(cors({
 app.use(express.json());
 
 // 2. Health Check & DB Test Route
+// Use this to verify the DB is working: https://your-backend.onrender.com/api/health
 app.get("/api/health", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
@@ -54,9 +54,15 @@ app.get("/api/health", async (req, res) => {
       time: result.rows[0].now 
     });
   } catch (err) {
-    res.status(500).json({ status: "error", message: err.message });
+    res.status(500).json({ 
+      status: "error", 
+      message: "Database connection failed",
+      error: err.message 
+    });
   }
 });
+
+app.get("/", (req, res) => res.send("Backend is Live 🚀"));
 
 // 3. Routes
 app.use("/api/chat", chatRoutes);
