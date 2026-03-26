@@ -24,7 +24,7 @@ app.listen(process.env.PORT || 5000, () => {
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import pool from "./db.js";
+import pool from "./config/db.js";
 
 // Import your routes - Ensure these filenames exactly match your files in /routes
 import chatRoutes from "./routes/chatRoutes.js";
