@@ -1,40 +1,61 @@
-# Dodge AI Intelligence
+# Dodge AI Intelligence ⬡
 
-An AI-powered Graph Intelligence system for Order-to-Cash (O2C) workflows.
+An AI-powered Graph Intelligence system designed to unify fragmented SAP Order-to-Cash (O2C) data into a traceable, queryable engine.
 
-## Tech Stack
-- Node.js (Backend)
-- Graph-based processing
-- Gemini API (AI)
-- PostgreSQL (Database)
-- Vanilla JS (Frontend)
+## 🏗 Architecture & Design Decisions
 
-## Project Structure
-backend/ → API, graph logic, ingestion  
-frontend/ → UI  
+### 1. Data Modeling: The Context Graph
+The core challenge was connecting siloed tables (Orders, Deliveries, Invoices, Payments). 
+- **Graph Construction:** I utilized a relational-to-graph mapping strategy. Instead of a standard flat join, the system treats each document as a **Node** and its SAP reference fields (`reference_sd_document`, `accounting_document`) as **Edges**.
+- **Traceability:** This allows for "Full Flow" tracing (Sales Order → Delivery → Billing → Journal Entry) by traversing these defined relationships.
 
-## Setup
+### 2. Database: PostgreSQL (Render)
+- **Choice:** I chose **PostgreSQL** for its strong relational integrity and **JSONB** support. 
+- **Flexibility:** Every table includes a `raw` JSONB column. This serves as a "fallback" for the AI, allowing it to access fields that may not have been explicitly mapped to a column during ingestion, ensuring the system is resilient to schema changes.
 
-1. Clone repo
-2. Install dependencies:
+### 3. LLM Strategy: Gemini Flash + Schema Context
+- **Prompting:** I implemented a **Schema-Aware Query Planner**. The system injects the current database schema and specific "Join Paths" into the prompt.
+- **Dynamic SQL:** The AI (Gemini Flash) acts as a translator, converting natural language into optimized PostgreSQL queries tailored to our custom O2C table names.
+
+### 4. Guardrails & Security
+- **Domain Restriction:** To prevent misuse (e.g., general knowledge questions), a dedicated guardrail layer was added to the System Instructions. If a query is off-topic, the AI triggers a standardized refusal: *"This system is designed to answer questions related to the provided dataset only."*
+
+---
+
+## 🛠 Tech Stack
+- **Backend:** Node.js, Express
+- **Database:** [PostgreSQL on Render](https://dashboard.render.com/d/dpg-d72kp9h4tr6s73bi8mjg-a)
+- **AI:** Google Gemini Flash 1.5
+- **Frontend:** Vanilla JS + Cytoscape.js/D3 (Graph Visualization)
+- **Deployment:** [Vercel (Frontend)](https://dodge-ai-intelligence.vercel.app/) & [Render (Backend)](https://dashboard.render.com/web/srv-d72jiuggjchc73861sd0)
+
+## 🚀 Setup & Installation
+
+1. **Clone & Install:**
+   ```bash
+   git clone https://github.com/Namitha4/Dodge-AI-intelligence.git
    npm install
+   ```
 
-3. Create `.env` file:
-   cp .env.example .env
+2. **Environment Configuration:**
+   Create a `.env` file with `DATABASE_URL` and `GEMINI_API_KEY`.
 
-4. Start backend:
-   node backend/src/app.js
+3. **Data Ingestion:**
+   Run the rebuild script to populate the cloud database:
+   ```bash
+   node backend/src/ingestion/auto_rebuild.js
+   ```
 
-## Environment Variables
-See `.env.example`
+4. **Start App:**
+   ```bash
+   npm start
+   ```
 
-## Features
-- Graph-based query planning
-- AI-powered responses
-- Data ingestion pipeline
-- Chat interface
+---
 
-## Future Improvements
-- UI enhancements
-- Deployment
-- Advanced graph analytics
+## 📊 Evaluation Queries (Try These)
+- **Traceability:** *"Trace the full flow of billing document 90504248"*
+- **Financials:** *"Which customers have unpaid invoices?"*
+- **Gap Analysis:** *"Show sales orders delivered but not billed"*
+
+
