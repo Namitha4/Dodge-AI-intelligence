@@ -50,12 +50,20 @@ The core challenge was connecting siloed tables (Orders, Deliveries, Invoices, P
    ```bash
    npm start
    ```
+   
+5. API Resilience & Scalability
+Quota Management: To handle the Free Tier limitations of Gemini 2.5 Flash, I implemented an asynchronous retry loop with a multi-model fallback strategy. The system attempts to use gemini-2.5-flash first and automatically rotates if a 429 (Rate Limit) error is detected.
 
+Optimized Schema Context: The schema provided to the LLM is token-optimized. By providing only essential column mappings and join paths, the system stays well within the Tokens Per Minute (TPM) limits while maintaining high SQL accuracy.
+
+Guardrail Performance: The guardrail logic is integrated directly into the planQuery response handler. This prevents unnecessary database overhead by rejecting off-topic prompts before they reach the SQL execution layer.
 ---
 
 ## 📊 Evaluation Queries (Try These)
 - **Traceability:** *"Trace the full flow of billing document 90504248"*
 - **Financials:** *"Which customers have unpaid invoices?"*
 - **Gap Analysis:** *"Show sales orders delivered but not billed"*
+
+  
 
 
